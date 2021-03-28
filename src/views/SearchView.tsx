@@ -24,7 +24,7 @@ export function SearchView() {
 
 
   const [currentText, setText] = useState("");
-  const [currentType, setType] = useState(useSelector(selectSearchType));
+  const [currentType, setType] = useState(searchType);
 
   const [currentUsers, setCurrentUsers] = useState(users);
   const [currentRepositories, setCurrentRepositories] = useState(repositories);
@@ -35,14 +35,22 @@ export function SearchView() {
     dispatch(setSearchResultsAsync(currentType, currentText))
   }
 
+  const isSearchEnabled = () => {
+    if (currentText.length >= 3){
+      return true
+    } else {
+      return false
+    }
+  }
+
   const searchGithub = () => {
-    if (currentText.length < 3) {
+    if (!isSearchEnabled()) {
       setCurrentRepositories([])
       setCurrentIssues([])
       setCurrentUsers([])
     }
 
-    if (currentText.length >= 3) {
+    if (isSearchEnabled()) {
       if (currentText !== searchText || currentType !== searchType) {
         dispatch(setSearchText(currentText))
         dispatch(setSearchType(currentType))
@@ -86,12 +94,20 @@ export function SearchView() {
 
 
   const renderCards = () => {
+    // check if text search is lesser than 3 then display empty screen
+    if (!isSearchEnabled()) {
+      return null
+    }
+
+    // check if all results is empty then display empty screen
     if (currentUsers.length === 0 && currentRepositories.length === 0 && currentIssues.length === 0) {
       return null
     }
+
     if(isLoading) {
       return <h1 style={{color:'#808080r'}}>Loading ....</h1>
     }
+    
     switch (currentType) {
       case "users": 
         return (currentUsers?.map((each: User) => {
