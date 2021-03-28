@@ -57,7 +57,6 @@ export function SearchView() {
         setText(currentText)
         handleSearchAPI()
       } else {
-        console.warn("searchType", searchType)
         switch(searchType) {
           case "users": 
             setCurrentUsers(users)

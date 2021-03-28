@@ -75,7 +75,6 @@ export const setSearchResultsAsync = (searchType: string, searchText: string): A
           break;
       }
       dispatch(setIsLoading(false))
-      console.log("got data",data.items);
     }).catch((error) => {
       dispatch(setIsLoading(false))
       console.log("err: ",error);
