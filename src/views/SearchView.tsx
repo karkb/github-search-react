@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { 
   setSearchResultsAsync, setSearchText, setSearchType, 
   selectSearchType, selectSearchText, selectRepositories, 
-  selectUsers, selectIssues,selectIsLoading
+  selectUsers, selectIssues,selectIsLoading, selectErrorMessage, selectErrorCode, setIsLoading
 } from '../redux/reducers/searchSlice';
 import { Repository, User, Issue } from '../redux/types';
 import SearchInput from '../components/SearchInput';
@@ -18,6 +18,10 @@ export function SearchView() {
   const searchType: string = useSelector(selectSearchType)
   const searchText: string = useSelector(selectSearchText)
   const isLoading: boolean = useSelector(selectIsLoading)
+  const errorCode: number = useSelector(selectErrorCode)
+  const errorMessage: string = useSelector(selectErrorMessage)
+
+
   const repositories: Repository[] = useSelector(selectRepositories)
   const users: User[] = useSelector(selectUsers)
   const issues: Issue[] = useSelector(selectIssues)
@@ -26,10 +30,9 @@ export function SearchView() {
   const [currentText, setText] = useState("");
   const [currentType, setType] = useState(searchType);
 
-  const [currentUsers, setCurrentUsers] = useState(users);
-  const [currentRepositories, setCurrentRepositories] = useState(repositories);
-  const [currentIssues, setCurrentIssues] = useState(issues);
-
+  const [currentUsers, setCurrentUsers] = useState<User[]>([]);
+  const [currentRepositories, setCurrentRepositories] = useState<Repository[]>([]);;
+  const [currentIssues, setCurrentIssues] = useState<Issue[]>([]);
 
   const handleSearchAPI = () => {
     dispatch(setSearchResultsAsync(currentType, currentText))
@@ -43,14 +46,18 @@ export function SearchView() {
     }
   }
 
+  // console.warn(1)
   const searchGithub = () => {
+
     if (!isSearchEnabled()) {
       setCurrentRepositories([])
       setCurrentIssues([])
       setCurrentUsers([])
     }
 
+
     if (isSearchEnabled()) {
+
       if (currentText !== searchText || currentType !== searchType) {
         dispatch(setSearchText(currentText))
         dispatch(setSearchType(currentType))
@@ -70,12 +77,15 @@ export function SearchView() {
         }
       }
     }
+    
   }
 
     useEffect(() => {
       const delayDebounceFn = setTimeout(() => {
+
         searchGithub()
-      }, 500)
+
+      }, 700)
   
       
       return () => clearTimeout(delayDebounceFn)
@@ -98,13 +108,16 @@ export function SearchView() {
       return null
     }
 
-    // check if all results is empty then display empty screen
-    if (currentUsers.length === 0 && currentRepositories.length === 0 && currentIssues.length === 0) {
-      return null
-    }
-
     if(isLoading) {
       return <h1 style={{color:'#808080r'}}>Loading ....</h1>
+    }
+
+    if (errorCode !== 200) {
+      return <h3 style={{color:'red'}}>System is busy now: {errorMessage}</h3>
+    }
+    
+    if(currentUsers && currentUsers.length === 0 && currentRepositories &&  currentRepositories.length === 0  && currentIssues  && currentIssues.length === 0 )  {
+      return null
     }
     
     switch (currentType) {
