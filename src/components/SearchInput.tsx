@@ -16,8 +16,7 @@ const StyledInput = styled.input`
   padding: 14px;
   color: #18273a;
   font-size: 14px;
-  font-weight: 700;
-  width: 100%;
+  width: 350px;
 `;
 
 const CustomInput = (props: SearchInputProps) => {
