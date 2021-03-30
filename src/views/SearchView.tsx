@@ -49,9 +49,8 @@ export function SearchView() {
   const isSearchEnabled = () => {
     if (currentText.length >= 3) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   };
 
   const searchGithub = () => {
